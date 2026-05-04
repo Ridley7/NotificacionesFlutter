@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "622967624961",
+    "project_id": "notifications-fernando",
+    "storage_bucket": "notifications-fernando.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:622967624961:android:d67ca72424560ba753b700",
+        "android_client_info": {
+          "package_name": "com.franks.notifications.notificaciones_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCD6qTQwU5k1osLbEXO13UANeQVuvY2g_Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

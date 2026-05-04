@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notificaciones_flutter/config/router/app_router.dart';
+import 'package:notificaciones_flutter/presentation/blocs/notifications_bloc.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await NotificationsBloc.initializeFCM();
+
+  runApp(MultiBlocProvider(
+      providers: [ 
+        BlocProvider(create: (_) => NotificationsBloc())
+      ],
+      child: const MyApp())
+  );
 }
 
 class MyApp extends StatelessWidget {
+
   const MyApp({super.key});
 
   // This widget is the root of your application.

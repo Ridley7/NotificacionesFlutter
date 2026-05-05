@@ -1,11 +1,19 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:notificaciones_flutter/domain/entities/push_message.dart';
 import 'package:notificaciones_flutter/firebase_options.dart';
 
 part 'notifications_event.dart';
 part 'notifications_state.dart';
+
+//Gestión de las notificaciones push cuando esta está terminated
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async{
+  await Firebase.initializeApp();
+}
 
 class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
 
@@ -14,6 +22,7 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   NotificationsBloc() : super( const NotificationsState()) {
 
     on<NotificationStatusChanged>( _notificationStatusChanged );
+    on<NotificationReceived>( _notificationReceived );
 
     _initialStatusCheck();
     _onForegroundMessage();
@@ -22,6 +31,14 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   static Future<void> initializeFCM() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform
+    );
+  }
+
+  void _notificationReceived( NotificationReceived event, Emitter<NotificationsState> emit){
+    emit(
+      state.copyWith(
+        notifications: [ event.pushMessage, ...state.notifications ]
+      )
     );
   }
 
@@ -39,12 +56,24 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   }
 
   void _handleRemoteMessage(RemoteMessage message){
-    print("Tengo un mensaje en foreground");
-    print("Los datos el mensaje son:  ${message.data}");
 
     if(message.notification == null) return;
 
-    print("El mensaje tambien contiene una notificacion ${message.notification}");
+    final notification = PushMessage(
+      messageId: message.messageId
+          ?.replaceAll(':', '').replaceAll('%', '')
+          ?? '',
+      title: message.notification!.title ?? '',
+      body: message.notification!.body ?? '',
+      sentDate: message.sentTime ?? DateTime.now(),
+      data: message.data,
+      imageUrl: Platform.isAndroid
+        ? message.notification!.android?.imageUrl
+          : message.notification!.apple?.imageUrl
+    );
+
+    add( NotificationReceived(notification));
+
   }
 
   //Con esto gestiono las notificaciones en foreground y background

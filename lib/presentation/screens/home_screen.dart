@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:notificaciones_flutter/presentation/blocs/notifications_bloc.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -45,7 +46,11 @@ class HomeView extends StatelessWidget {
             subtitle: Text(notification.body),
             leading: notification.imageUrl != null
             ? Image.network(notification.imageUrl!)
-                : null
+                : null,
+
+            onTap: (){
+              context.push('/push-details/${ notification.messageId }');
+            },
           );
         }
     );

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notificaciones_flutter/config/router/app_router.dart';
 import 'package:notificaciones_flutter/presentation/blocs/notifications_bloc.dart';
+import 'package:notificaciones_flutter/presentation/screens/widgets/handle_notification_interaction.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,9 +30,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       routerConfig: appRouter,
       title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
-      ),
+      theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple),),
+      builder: (context, child) => HandleNotificationInteraction(child: child!),
     );
   }
 }

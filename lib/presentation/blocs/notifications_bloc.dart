@@ -18,8 +18,15 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async{
 class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
 
   final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+  int numberId = 0;
 
-  NotificationsBloc() : super( const NotificationsState()) {
+  final Future<void> Function()? requestPermissionLocalNotifications;
+  final void Function({required int id, String? title, String? body, String? data})? showLocalNotification;
+
+  NotificationsBloc({
+    this.requestPermissionLocalNotifications,
+    this.showLocalNotification
+}) : super( const NotificationsState()) {
 
     on<NotificationStatusChanged>( _notificationStatusChanged );
     on<NotificationReceived>( _notificationReceived );
@@ -72,6 +79,15 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
           : message.notification!.apple?.imageUrl
     );
 
+    if(showLocalNotification != null){
+      showLocalNotification!(
+          id: ++numberId,
+          body: notification.body,
+          data: notification.messageId,
+          title: notification.title
+      );
+    }
+
     add( NotificationReceived(notification));
 
   }
@@ -112,8 +128,17 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
       sound: true
     );
 
+    //Pedimos permisos para notificaciones locales.
+    //Segun Fernando, no hace falta ya que son los mismo permisos que para las
+    //notificaciones push
+    if(requestPermissionLocalNotifications != null){
+      await requestPermissionLocalNotifications!();
+    }
 
     add(NotificationStatusChanged(notificationSettings.authorizationStatus));
+
+
+
   }
 
   PushMessage? getMessageById(String id){
